@@ -32,8 +32,10 @@ app.use(cookieParser());
 connectDB()
   .then(() => {
     console.log("database connection established");
-    app.listen(() => {
-      console.log(`server is listening on ${process.env.BACKEND_URL}`);
+    app.listen(process.env.PORT, () => {
+      console.log(
+        `server is listening on http://localhost:${process.env.PORT}`,
+      );
     });
   })
   .catch((err) => {
