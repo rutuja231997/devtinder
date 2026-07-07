@@ -31,8 +31,8 @@ const Connections = () => {
 
   if (!connections) {
     return (
-      <div>
-        Connections are not found...!!! <p>{error}</p>
+      <div className="flex justify-center items-center w-full h-screen">
+        <p>{error}</p>
       </div>
     );
   }

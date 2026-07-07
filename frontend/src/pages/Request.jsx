@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { addRequest, removeRequest } from "../utils/requestSlice";
@@ -11,6 +11,8 @@ const Request = () => {
 
   const connectionsRequest = useSelector((store) => store.requests);
 
+  const [error, setError] = useState("");
+
   const handleRequest = async (status, requestId) => {
     try {
       const response = await axios.post(
@@ -21,6 +23,7 @@ const Request = () => {
       console.log(response.data);
       dispatch(removeRequest(requestId));
     } catch (err) {
+      setError(err?.response?.data?.message);
       console.log(err);
     }
   };
@@ -36,14 +39,18 @@ const Request = () => {
         console.log(response.data.connectionRequests);
         dispatch(addRequest(response.data.connectionRequests));
       } catch (err) {
-        console.log(err);
+        setError(err?.response?.data?.message);
       }
     }
     fetchRequests();
   }, [dispatch]);
 
   if (!connectionsRequest) {
-    return <div>request does not found</div>;
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <p>{error}</p>
+      </div>
+    );
   }
   return (
     <div className="flex flex-col min-h-screen w-full justify-start items-center space-y-8 mt-10">

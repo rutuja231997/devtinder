@@ -3,6 +3,7 @@ import FormInput from "./Form/FormInput";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
@@ -50,7 +51,7 @@ const Auth = ({ isLogin = true }) => {
         password: "",
       });
 
-      navigate("/");
+      navigate("/feed");
     } catch (err) {
       console.log(err?.response?.data?.message);
       setError(err?.response?.data?.message);
@@ -74,7 +75,7 @@ const Auth = ({ isLogin = true }) => {
         </h2>
         <form
           onSubmit={handleSubmit}
-          className={`card-body ${isLogin ? "grid grid-cols-1" : "grid grid-cols-2 gap-4"}`}
+          className={`card-body ${isLogin ? "flex flex-col justify-center items-left gap-4" : "flex flex-col justify-center items-left gap-4"}`}
         >
           {isLogin ? (
             <>
@@ -96,7 +97,7 @@ const Auth = ({ isLogin = true }) => {
               />
             </>
           ) : (
-            <>
+            <div className="grid grid-cols-2 gap-4">
               {" "}
               <FormInput
                 type="text"
@@ -146,13 +147,18 @@ const Auth = ({ isLogin = true }) => {
                 value={formData.password}
                 onChange={handleChange}
               />
-            </>
+            </div>
           )}
           <div className="card-actions flex flex-col justify-center items-center">
             <p className="text-red-500 text-xs font-semibold">{error}</p>
             <button type="submit" className="btn btn-primary">
               {isLogin ? "Login" : "Sign up"}
             </button>
+            <Link to={`${isLogin ? "/signup" : "/login"}`}>
+              <button className="decoration-white underline text-sm font-medium">
+                {isLogin ? "Sign up" : "Login"}
+              </button>
+            </Link>
           </div>
         </form>
       </div>

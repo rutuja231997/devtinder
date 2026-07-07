@@ -6,13 +6,14 @@ const FormInput = ({
   name,
   onChange,
   value,
+  className,
 }) => {
   return (
-    <fieldset className="fieldset">
+    <fieldset className={`fieldset`}>
       <legend className="fieldset-legend">{label}</legend>
       <input
         type={type}
-        className="input"
+        className={`input ${className}`}
         placeholder={placeholder}
         name={name}
         onChange={onChange}

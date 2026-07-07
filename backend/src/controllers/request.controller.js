@@ -1,6 +1,8 @@
 const User = require("../models/user.model");
 const ConnectionRequest = require("../models/connectionRequest.model.js");
 
+const sendEmail = require("../utils/sendEmail.js");
+
 const requestSend = async (req, res) => {
   try {
     const user = req.user;
@@ -48,6 +50,14 @@ const requestSend = async (req, res) => {
     });
 
     await connectionRequest.save();
+
+    //sending email
+    const emailResponse = await sendEmail.run(
+      `A friend request from ${user.firstName + " " + user.lastName}`,
+      `${user.firstName + " " + user.lastName} send friend request.`,
+    );
+
+    console.log(emailResponse);
 
     return res.status(201).json({
       message: `${status === "interested" ? `Request successfully sent by ${user.firstName + " " + user.lastName} to ${existUser.firstName + " " + existUser.lastName} ` : `Request ignored by ${existUser.firstName + " " + existUser.lastName}`}  `,

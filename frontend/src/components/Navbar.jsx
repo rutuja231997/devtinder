@@ -30,7 +30,7 @@ const Navbar = () => {
   return (
     <div className="navbar bg-base-300 shadow-sm px-10">
       <div className="flex-1">
-        <Link to="/" className="btn btn-ghost text-xl">
+        <Link to="/feed" className="btn btn-ghost text-xl">
           <TbCodeCircle2Filled size={32} />
           DevTinder
         </Link>

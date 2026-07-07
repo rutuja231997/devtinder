@@ -11,6 +11,13 @@ const authRouter = require("./routes/auth.route");
 const profileRouter = require("./routes/profile.route");
 const requestRouter = require("./routes/request.route");
 const userRouter = require("./routes/user.route");
+const chatRouter = require("./routes/chat.route");
+
+const initializeSocket = require("./utils/socket");
+
+require("./utils/cronJob");
+
+const http = require("http");
 
 const app = express(); //write instance of express
 
@@ -28,11 +35,17 @@ app.use(express.json());
 //middleware helps to parse cookie readable object format
 app.use(cookieParser());
 
+//create http server and attach to the express app
+const server = http.createServer(app);
+
+//attach the socket.io to server
+initializeSocket(server);
+
 //connect db first and start server
 connectDB()
   .then(() => {
     console.log("database connection established");
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log(
         `server is listening on http://localhost:${process.env.PORT}`,
       );
@@ -47,6 +60,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
+app.use("/", chatRouter);
 
 app.use((req, res) => {
   res.send("server is listening");

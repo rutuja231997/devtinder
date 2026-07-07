@@ -1,4 +1,5 @@
 import photoImg from "../assets/female-profile.jpg";
+import { Link } from "react-router-dom";
 
 const ConnectionsCard = ({ connection, index }) => {
   const { firstName, lastName, about } = connection;
@@ -18,6 +19,9 @@ const ConnectionsCard = ({ connection, index }) => {
           </div>
         </div>
         <button className="btn btn-primary">Remove</button>
+        <Link to={`/chat/${connection._id}`}>
+          <button className="btn bg-pink-500">Chat</button>
+        </Link>
       </li>
     </ul>
   );
