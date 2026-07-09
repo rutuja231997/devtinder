@@ -16,6 +16,7 @@ const EditProfile = ({ user }) => {
     about: user?.about || "",
     skills: user?.skills || "",
     photoUrl: user?.photoUrl || "",
+    contact: user?.contact || "",
   });
 
   const [error, setError] = useState("");
@@ -117,6 +118,13 @@ const EditProfile = ({ user }) => {
               name={"skills"}
               onChange={handleChange}
               value={formData.skills}
+            />
+            <FormInput
+              type="text"
+              label="Contact"
+              name={"contact"}
+              value={formData.contact}
+              onChange={handleChange}
             />
           </>
           <div className="card-actions flex flex-col justify-center items-center">

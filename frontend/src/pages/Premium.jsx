@@ -25,7 +25,7 @@ const Premium = () => {
         prefill: {
           name: notes.firstName + "" + notes.lastName,
           email: notes.gmail,
-          contact: "9999999999",
+          contact: notes.contact,
         },
         theme: {
           color: "#F37254",
