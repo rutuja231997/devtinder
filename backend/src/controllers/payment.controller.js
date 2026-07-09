@@ -53,9 +53,12 @@ const paymentCreateOrder = async (req, res) => {
 
 const paymentVerification = async (req, res) => {
   try {
-    const webhookSignature = req.header["X-Razorpay-Signature"];
+    const webhookSignature = req.header("X-Razorpay-Signature");
 
     const webhookBody = req.body;
+
+    console.log("webhook called");
+    console.log("webhook signature", webhookSignature);
 
     // const webhookSignature = req.get["X-Razorpay-Signature"];
 
@@ -70,8 +73,6 @@ const paymentVerification = async (req, res) => {
         msg: "Webhook signature is invalid....",
       });
     }
-
-    console.log(webhookBody, process.env.WEBHOOK_SECRET);
 
     //update my payment status in DB
     const paymentDetails = req.body.payload.entity;
@@ -112,4 +113,4 @@ const paymentVerification = async (req, res) => {
   }
 };
 
-module.exports = { paymentCreateOrder };
+module.exports = { paymentCreateOrder, paymentVerification };
