@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const User = require("./user.model");
+const membershipTypeAmount = require("../utils/constants");
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -41,6 +42,9 @@ const paymentSchema = new mongoose.Schema(
         type: String,
       },
       email: {
+        type: String,
+      },
+      membershipType: {
         type: String,
       },
     },
