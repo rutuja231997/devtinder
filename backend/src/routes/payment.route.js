@@ -10,10 +10,6 @@ paymentRouter.post(
   paymentController.paymentCreateOrder,
 );
 
-paymentRouter.post(
-  "/payment/webhook",
-  userAuth,
-  paymentController.paymentVerification,
-);
+paymentRouter.post("/payment/webhook", paymentController.paymentVerification);
 
 module.exports = paymentRouter;

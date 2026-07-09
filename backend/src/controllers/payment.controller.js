@@ -1,5 +1,7 @@
 const razorpayInstance = require("../utils/razorpay");
-const validateWebhookSignature = require("razorpay/dist/utils/razorpay-utils");
+const {
+  validateWebhookSignature,
+} = require("razorpay/dist/utils/razorpay-utils");
 
 const Payment = require("../models/payment.model");
 const membershipTypeAmount = require("../utils/constants");
@@ -53,14 +55,14 @@ const paymentCreateOrder = async (req, res) => {
 
 const paymentVerification = async (req, res) => {
   try {
-    const webhookSignature = req.header("X-Razorpay-Signature");
-
-    const webhookBody = req.body;
-
     console.log("webhook called");
     console.log("webhook signature", webhookSignature);
 
-    // const webhookSignature = req.get["X-Razorpay-Signature"];
+    const webhookSignature = req.get("X-Razorpay-Signature");
+
+    const webhookBody = req.body;
+
+    // const webhookSignature = req.header("X-Razorpay-Signature");
 
     const isWebhookValid = validateWebhookSignature(
       JSON.stringify(webhookBody),
@@ -77,13 +79,15 @@ const paymentVerification = async (req, res) => {
     //update my payment status in DB
     const paymentDetails = req.body.payload.entity;
 
+    console.log(paymentDetails);
+
     const payment = await Payment.findOne({
-      orderId: paymentDetails.order_id,
+      orderId: paymentDetails.order._id,
     });
 
     console.log(payment);
 
-    payment.status = true;
+    payment.status = paymentDetails.status;
     await payment.save();
 
     //update my user status in DB
