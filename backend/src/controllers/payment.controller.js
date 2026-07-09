@@ -58,8 +58,6 @@ const paymentVerification = async (req, res) => {
   try {
     const webhookSignature = req.get("X-Razorpay-Signature");
 
-    console.log("webhook called");
-    console.log("webhook signature", webhookSignature);
     // const webhookSignature = req.header("X-Razorpay-Signature");
 
     const isWebhookValid = validateWebhookSignature(
@@ -77,13 +75,9 @@ const paymentVerification = async (req, res) => {
     //update my payment status in DB
     const paymentDetails = req.body.payload.payment.entity;
 
-    console.log(paymentDetails);
-
     const payment = await Payment.findOne({
       orderId: paymentDetails.order_id,
     });
-
-    console.log(payment);
 
     payment.status = paymentDetails.status;
     await payment.save();
