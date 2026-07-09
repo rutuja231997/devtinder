@@ -5,6 +5,7 @@ const {
 
 const Payment = require("../models/payment.model");
 const membershipTypeAmount = require("../utils/constants");
+const User = require("../models/user.model");
 
 const paymentCreateOrder = async (req, res) => {
   try {
