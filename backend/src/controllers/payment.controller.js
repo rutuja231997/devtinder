@@ -57,14 +57,12 @@ const paymentVerification = async (req, res) => {
   try {
     const webhookSignature = req.get("X-Razorpay-Signature");
 
-    const webhookBody = req.body;
-
     console.log("webhook called");
     console.log("webhook signature", webhookSignature);
     // const webhookSignature = req.header("X-Razorpay-Signature");
 
     const isWebhookValid = validateWebhookSignature(
-      JSON.stringify(webhookBody),
+      JSON.stringify(req.body),
       webhookSignature,
       process.env.WEBHOOK_SECRET,
     );
