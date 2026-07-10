@@ -63,7 +63,7 @@ const Premium = () => {
   };
   return isUserPremium ? (
     <div className="flex justify-center items-center h-screen w-full">
-      <h1 className="text-red-500 font-semibold text-xs">
+      <h1 className="text-red-500 font-semibold text-base">
         User is already has Premium Status
       </h1>
     </div>
