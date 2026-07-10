@@ -123,6 +123,7 @@ const EditProfile = ({ user }) => {
               type="text"
               label="Contact"
               name={"contact"}
+              placeholder={"Enter a contact"}
               value={formData.contact}
               onChange={handleChange}
             />

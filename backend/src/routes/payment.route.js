@@ -12,4 +12,6 @@ paymentRouter.post(
 
 paymentRouter.post("/payment/webhook", paymentController.paymentVerification);
 
+paymentRouter.get("/premium/verify", userAuth, paymentController.PremiumVerify);
+
 module.exports = paymentRouter;

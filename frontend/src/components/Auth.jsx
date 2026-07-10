@@ -13,9 +13,6 @@ const Auth = ({ isLogin = true }) => {
     firstName: "",
     lastName: "",
     email: "",
-    age: 0,
-    gender: "",
-    about: "",
     password: "",
   });
 
@@ -44,16 +41,12 @@ const Auth = ({ isLogin = true }) => {
         firstName: "",
         lastName: "",
         email: "",
-        age: 0,
-        gender: "",
-        about: "",
-        skills: "",
         password: "",
       });
 
       navigate("/feed");
     } catch (err) {
-      console.log(err?.response?.data?.message);
+      console.log(err);
       setError(err?.response?.data?.message);
     }
   };
@@ -121,22 +114,6 @@ const Auth = ({ isLogin = true }) => {
                 label="Email"
                 name={"email"}
                 value={formData.email}
-                onChange={handleChange}
-              />
-              <FormInput
-                type="gender"
-                placeholder="Enter a gender"
-                label="Gender"
-                name={"gender"}
-                value={formData.gender}
-                onChange={handleChange}
-              />
-              <FormInput
-                type="number"
-                placeholder="Enter a age"
-                label="Age"
-                name={"age"}
-                value={formData.age}
                 onChange={handleChange}
               />
               <FormInput

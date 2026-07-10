@@ -1,6 +1,23 @@
 import axios from "axios";
+import { useState } from "react";
 
 const Premium = () => {
+  const [isUserPremium, setIsUserPremium] = useState(false);
+
+  const VerifyPremiumUser = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/premium/verify`,
+        { withCredentials: true },
+      );
+
+      console.log(response.data.PremiumStatus);
+      setIsUserPremium(response.data.PremiumStatus);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   const handlePayment = async (membershipType) => {
     try {
       const paymentResponse = await axios.post(
@@ -30,6 +47,7 @@ const Premium = () => {
         theme: {
           color: "#F37254",
         },
+        handler: VerifyPremiumUser(),
       };
 
       const rzp = new window.Razorpay(options);
@@ -38,7 +56,13 @@ const Premium = () => {
       console.log(err);
     }
   };
-  return (
+  return isUserPremium ? (
+    <div className="flex justify-center items-center h-screen w-full">
+      <h1 className="text-red-500 font-semibold text-xs">
+        User is already has Premium Status
+      </h1>
+    </div>
+  ) : (
     <div className="flex w-full h-screen justify-center items-center">
       <div className="card w-96 bg-base-300 shadow-sm">
         <div className="card-body">

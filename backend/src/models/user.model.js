@@ -41,7 +41,6 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      required: true,
       enum: {
         values: ["female", "male", "prefer not to say"],
         message: `please choose the gender`,
@@ -57,7 +56,7 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      default: "",
+      default: "https://ispai.in/uploads/team/about_us60524217.png",
     },
     about: {
       type: String,

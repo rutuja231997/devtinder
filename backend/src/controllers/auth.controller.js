@@ -6,17 +6,7 @@ const signup = async (req, res) => {
   try {
     //creating instance of the user model
     const userPayLoad = req.body;
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      age,
-      gender,
-      photoUrl,
-      about,
-      skills,
-    } = userPayLoad;
+    const { firstName, lastName, email, password } = userPayLoad;
 
     //check user is new or existing
     const existingUser = await User.findOne({ email: email });
@@ -34,11 +24,6 @@ const signup = async (req, res) => {
       lastName: lastName,
       email: email,
       password: hashedPassword,
-      age: age,
-      gender: gender,
-      photoUrl: photoUrl,
-      about: about,
-      skills: skills,
     });
 
     await user.save();

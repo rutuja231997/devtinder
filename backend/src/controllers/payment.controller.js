@@ -109,4 +109,25 @@ const paymentVerification = async (req, res) => {
   }
 };
 
-module.exports = { paymentCreateOrder, paymentVerification };
+const PremiumVerify = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (user.isPremium === true) {
+      return res.status(200).json({
+        msg: "User is enable premium membership",
+        PremiumStatus: user.isPremium,
+      });
+    }
+    return res.status(404).json({
+      msg: "user is failed to enable premium membership...",
+      PremiumStatus: user.isPremium,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      msg: err.msg,
+    });
+  }
+};
+
+module.exports = { paymentCreateOrder, paymentVerification, PremiumVerify };
