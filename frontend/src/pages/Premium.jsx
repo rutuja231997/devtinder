@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Premium = () => {
   const [isUserPremium, setIsUserPremium] = useState(false);
@@ -17,6 +18,10 @@ const Premium = () => {
       console.log(err.message);
     }
   };
+
+  useEffect(() => {
+    VerifyPremiumUser();
+  }, []);
 
   const handlePayment = async (membershipType) => {
     try {
