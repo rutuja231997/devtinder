@@ -1,41 +1,18 @@
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import Sidebar from "./dashboard/Sidebar";
+import Topbar from "./dashboard/Topbar";
 
-import { Outlet, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { addUser } from "../utils/userSlice";
+import { Outlet } from "react-router-dom";
 
 const Body = () => {
-  const dispatch = useDispatch();
-
-  const navigate = useNavigate();
-
-  const userFetch = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/profile/view`,
-        { withCredentials: true },
-      );
-      dispatch(addUser(response.data.user));
-    } catch (err) {
-      navigate("/");
-      console.log(err.message);
-    }
-  };
-
-  useEffect(() => {
-    userFetch();
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main>
-        <Outlet />
-      </main>
-      <Footer />
+    <div className="flex h-screen overflow-hidden bg-background font-sans">
+      <Sidebar />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Topbar />
+        <div className="flex min-h-0 flex-1">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 };

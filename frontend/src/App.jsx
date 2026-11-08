@@ -5,31 +5,54 @@ import Feed from "./pages/Feed";
 import Profile from "./pages/Profile";
 import Connections from "./pages/Connections";
 import Request from "./pages/Request";
-import Home from "./pages/Home";
 import Chat from "./pages/Chat";
+
+import LandingPage from "./components/Landing/LandingPage";
+import DashboardMain from "./components/dashboard/DashboardMain";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import Premium from "./pages/Premium";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
+import Message from "./components/chat/Message";
+import AuthProvider from "./components/AuthProvider";
+import ProfileView from "./pages/ProfileView";
+import ProfileViews from "./pages/ProfileViews";
+
 const App = () => {
   return (
     <Provider store={appStore}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Body />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/connections" element={<Connections />} />
-            <Route path="/request" element={<Request />} />
-            <Route path="/chat/:targetUserId" element={<Chat />} />
-            <Route path="/memberships" element={<Premium />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route element={<PublicRoute />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+            </Route>
+            <Route path="/" element={<Body />}>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<DashboardMain />} />
+                <Route path="/message" element={<Message />} />
+                <Route path="/message/:targetUserId" element={<Message />} />
+                <Route path="/feed" element={<Feed />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/connections" element={<Connections />} />
+                <Route path="/requests" element={<Request />} />
+                <Route
+                  path="/profile-view/:profileOwnerId"
+                  element={<ProfileView />}
+                />
+                <Route path="/profile-views" element={<ProfileViews />} />
+                <Route path="/chat/:targetUserId" element={<Chat />} />
+                <Route path="/memberships" element={<Premium />} />
+              </Route>
+            </Route>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </Provider>
   );

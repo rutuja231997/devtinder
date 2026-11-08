@@ -9,8 +9,8 @@ const userAuth = async (req, res, next) => {
     const { token } = cookies;
 
     if (!token) {
-      return res.status(404).json({
-        message: "authentication failed",
+      return res.status(401).json({
+        message: "Authenticaton required. Please Login in",
       });
     }
 
@@ -22,8 +22,8 @@ const userAuth = async (req, res, next) => {
     const existingUser = await User.findById({ _id: _id });
 
     if (!existingUser) {
-      return res.status(404).json({
-        message: "user not found",
+      return res.status(401).json({
+        message: "User not found. Please Login again",
       });
     }
 
@@ -32,9 +32,19 @@ const userAuth = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.log("error:", err);
+    console.log("Authentication Error:", err);
+
+    //expired or invalid JWT
+    if (
+      err instanceof jwt.TokenExpiredError ||
+      err instanceof jwt.JsonWebTokenError
+    ) {
+      return res.status(401).json({
+        message: "Session expired. Please Login again.",
+      });
+    }
     return res.status(500).json({
-      message: "Authentication is failed",
+      message: "Internal server error",
     });
   }
 };

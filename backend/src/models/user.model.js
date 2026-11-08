@@ -7,9 +7,12 @@ const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
+      minLength: 4,
+      maxLength: 50,
     },
     lastName: {
       type: String,
+      maxLength: 50,
     },
     email: {
       type: String,
@@ -25,6 +28,17 @@ const userSchema = new mongoose.Schema(
     },
     contact: {
       type: String,
+      default: null,
+      validate(value) {
+        if (value == null || value === "") {
+          return true;
+        }
+
+        if (!validator.isMobilePhone(value, "en-IN")) {
+          throw new Error("Invalid Number: " + value);
+        }
+        return true;
+      },
     },
     password: {
       type: String,
@@ -42,8 +56,15 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: {
-        values: ["female", "male", "prefer not to say"],
+        values: ["female", "male", "others", "prefer not to say"],
         message: `please choose the gender`,
+      },
+      validate(value) {
+        if (
+          !["female", "male", "others", "prefer not to say"].includes(value)
+        ) {
+          throw new Error("Gender data is not valid", +value);
+        }
       },
     },
     isPremium: {
@@ -57,6 +78,10 @@ const userSchema = new mongoose.Schema(
     photoUrl: {
       type: String,
       default: "https://ispai.in/uploads/team/about_us60524217.png",
+    },
+    role: {
+      type: String,
+      default: "This is a default role of the user...!",
     },
     about: {
       type: String,

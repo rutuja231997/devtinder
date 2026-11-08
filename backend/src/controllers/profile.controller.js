@@ -30,14 +30,40 @@ const profileUpdate = async (req, res) => {
 
     const loggedUser = req.user;
 
+    // 1. this way we can update the user profile
     //go through javascript basics to understand this line of code
     Object.keys(req.body).forEach((key) => (loggedUser[key] = req.body[key]));
+    const updatedUser = await loggedUser.save();
 
-    await loggedUser.save();
+    // 2. this way we can update the user profile
+    // const {
+    //   firstName,
+    //   lastName,
+    //   contact,
+    //   age,
+    //   photoUrl,
+    //   about,
+    //   skills,
+    //   gender,
+    // } = loggedUser;
+    // const updateUser = await User.findByIdAndUpdate(
+    //   { _id: loggedUser._id },
+    //   {
+    //     firstName,
+    //     lastName,
+    //     contact,
+    //     age,
+    //     photoUrl,
+    //     about,
+    //     skills,
+    //     gender,
+    //   },
+    //   { runValidators: true },
+    // );
 
     return res.status(200).json({
       message: `${loggedUser.firstName}, your profile updated successfully`,
-      user: loggedUser,
+      user: updatedUser,
     });
   } catch (error) {
     console.log(error);

@@ -61,11 +61,24 @@ const findConnections = async (req, res) => {
       .populate("toUserId", USER_DATA);
 
     const data = connections.map((c) => {
-      if (c.fromUserId._id.toString() === loggedUser._id.toString()) {
-        return c.toUserId;
-      }
-      return c.fromUserId;
+      const user =
+        c.fromUserId._id.toString() === loggedUser._id.toString()
+          ? c.toUserId
+          : c.fromUserId;
+
+      return {
+        _id: c._id,
+        user,
+        connectedAt: c.updatedAt,
+      };
     });
+
+    // const data = connections.map((c) => {
+    //   if (c.fromUserId._id.toString() === loggedUser._id.toString()) {
+    //     return c.toUserId;
+    //   }
+    //   return c.fromUserId;
+    // });
 
     if (connections.length === 0) {
       return res.status(400).json({
@@ -138,6 +151,13 @@ const findFeed = async (req, res) => {
     return res.status(err.statusCode || 500).json({
       message: err.message,
     });
+  }
+};
+
+const unFriendConnection = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log(error);
   }
 };
 

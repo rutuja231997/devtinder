@@ -18,6 +18,10 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    readAt: {
+      type: Date,
+      deafult: null,
+    },
   },
   { timestamps: true },
 );

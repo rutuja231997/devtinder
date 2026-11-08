@@ -60,7 +60,7 @@ const login = async (req, res) => {
 
     if (!existingUser) {
       return res.status(401).json({
-        message: "Invalid credentials",
+        message: "Invalid Login credentials",
       });
     }
 
@@ -69,7 +69,7 @@ const login = async (req, res) => {
 
     if (!checkingPassword) {
       return res.status(401).json({
-        message: "Invalid credentials",
+        message: "Invalid Login credentials",
       });
     }
 

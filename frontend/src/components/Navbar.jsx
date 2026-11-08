@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeUser } from "../utils/userSlice";
 
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -14,11 +14,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/logout`,
-        {},
-        { withCredentials: true },
-      );
+      const response = await axiosInstance.post(`/logout`, {});
       console.log(response);
       dispatch(removeUser());
       return navigate("/login");
@@ -62,7 +58,7 @@ const Navbar = () => {
                 <Link to="/connections">Friends</Link>
               </li>
               <li>
-                <Link to="/request">Friend Request</Link>
+                <Link to="/requests">Friend Request</Link>
               </li>
               <li>
                 <Link to="/memberships">Buy membership</Link>

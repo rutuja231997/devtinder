@@ -1,6 +1,6 @@
 const { SESClient } = require("@aws-sdk/client-ses");
 
-const REGION = "ap-south-1"; //set the aws region
+const REGION = "ap-southeast-2"; //set the aws region
 
 const sesClient = new SESClient({
   region: REGION,

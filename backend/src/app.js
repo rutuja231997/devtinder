@@ -13,6 +13,7 @@ const requestRouter = require("./routes/request.route");
 const userRouter = require("./routes/user.route");
 const chatRouter = require("./routes/chat.route");
 const paymentRouter = require("./routes/payment.route");
+const profileViewRouter = require("./routes/profileview.route");
 
 const initializeSocket = require("./utils/socket");
 
@@ -63,6 +64,7 @@ app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", chatRouter);
 app.use("/", paymentRouter);
+app.use("/", profileViewRouter);
 
 app.use((req, res) => {
   res.send("server is listening");

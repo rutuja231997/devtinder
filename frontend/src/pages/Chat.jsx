@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { useSelector } from "react-redux";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
 import { createSocketConnection } from "../utils/socket";
 
@@ -17,6 +17,8 @@ const Chat = () => {
 
   const user = useSelector((store) => store.user);
 
+  const socketRef = useRef(null);
+
   const userId = user?._id;
   const firstName = user?.firstName;
   const lastName = user?.lastName;
@@ -24,12 +26,7 @@ const Chat = () => {
   useEffect(() => {
     const fetchedChatMessages = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/chat/${targetUserId}`,
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await axiosInstance.get(`/chat/${targetUserId}`);
 
         const chatResponse = response.data.chat.messages.map((msg) => {
           const { senderId, message, _id } = msg;
@@ -54,6 +51,8 @@ const Chat = () => {
   useEffect(() => {
     const socket = createSocketConnection();
 
+    socketRef.current = socket;
+
     socket.on("connect", () => {
       console.log("connected", socket.id);
     });
@@ -71,14 +70,18 @@ const Chat = () => {
     });
 
     return () => {
+      console.log("disconnecting socket...", socket.id);
       socket.disconnect();
+      socketRef.current = null;
     };
-  }, [userId, targetUserId, firstName, lastName, messages]);
+  }, [userId, targetUserId, firstName, lastName]);
 
   const handleSendMessage = () => {
-    const socket = createSocketConnection();
+    // const socket = createSocketConnection();
 
-    socket.emit("sendMessage", {
+    if (!message.trim()) return;
+
+    socketRef.current?.emit("sendMessage", {
       firstName,
       lastName,
       userId,

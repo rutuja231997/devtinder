@@ -1,54 +1,77 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import axiosInstance from "../utils/axiosInstance";
+import { useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { addRequest, removeRequest } from "../utils/requestSlice";
+import { fetchRequests, removeRequest } from "../utils/requestSlice";
 
-import photoImg from "../assets/female-profile.jpg";
+import { useNavigate } from "react-router-dom";
+
+import { Check, X } from "lucide-react";
 
 const Request = () => {
   const dispatch = useDispatch();
 
-  const connectionsRequest = useSelector((store) => store.requests);
+  const navigate = useNavigate();
 
-  const [error, setError] = useState("");
+  const {
+    items: connectionsRequest,
+    status,
+    error,
+  } = useSelector((store) => store.requests);
 
   const handleRequest = async (status, requestId) => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/request/review/${status}/${requestId}`,
+      const response = await axiosInstance.post(
+        `/request/review/${status}/${requestId}`,
         {},
-        { withCredentials: true },
       );
       console.log(response.data);
       dispatch(removeRequest(requestId));
     } catch (err) {
-      setError(err?.response?.data?.message);
+      console.log(err);
+    }
+  };
+
+  const handleProfileView = async (user) => {
+    try {
+      const response = await axiosInstance.post(
+        `/profile-view/${user._id}`,
+        {},
+      );
+      console.log(response.data);
+      console.log("view profile");
+      navigate(`/profile-view/${user._id}`, { state: { user: user } });
+    } catch (err) {
       console.log(err);
     }
   };
 
   useEffect(() => {
-    async function fetchRequests() {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/user/requests/received`,
-          { withCredentials: true },
-        );
-
-        console.log(response.data.connectionRequests);
-        dispatch(addRequest(response.data.connectionRequests));
-      } catch (err) {
-        setError(err?.response?.data?.message);
-      }
+    if (status === "idle") {
+      dispatch(fetchRequests());
     }
-    fetchRequests();
-  }, [dispatch]);
+  }, [dispatch, status]);
 
-  if (!connectionsRequest) {
+  if (status === "loading") {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <p>Loading connection requests....</p>
+      </div>
+    );
+  }
+
+  if (status === "failed") {
     return (
       <div className="flex justify-center items-center w-full h-screen">
         <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (connectionsRequest.length === 0) {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <p>No pending connection requests</p>
       </div>
     );
   }
@@ -57,44 +80,82 @@ const Request = () => {
       <div>
         <h1 className="font-semibold text-2xl">Connection Requests</h1>
       </div>
-      {connectionsRequest.map((request, index) => {
-        const { firstName, lastName, about, age, gender } = request.fromUserId;
-        return (
-          <div key={request._id}>
-            <ul className="list bg-base-300 rounded-box shadow-md w-150">
-              <li className="list-row">
-                <div className="text-4xl font-thin opacity-30 tabular-nums">
-                  {(index + 1).toString().padStart(2, "0")}
-                </div>
-                <div>
-                  <img className="h-12 w-12 rounded-full" src={photoImg} />
-                </div>
-                <div className="list-col-grow">
-                  <div>{firstName + " " + lastName}</div>
-                  <div>{age + " " + gender}</div>
-                  <div className="text-xs uppercase font-semibold opacity-60">
-                    {about}
-                  </div>
-                </div>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleRequest("rejected", request._id)}
-                >
-                  Reject
-                </button>
-                <button
-                  className="btn bg-pink-500"
-                  onClick={() => handleRequest("accepted", request._id)}
-                >
-                  Accepted
-                </button>
-              </li>
-            </ul>
-          </div>
-        );
-      })}
+      <div className="flex flex-col gap-2 w-1/2">
+        {connectionsRequest.map((request) => {
+          const user = request.fromUserId;
+
+          return (
+            <RequestCard
+              key={request._id}
+              user={user}
+              requestId={request._id}
+              handleRequest={handleRequest}
+              handleProfileView={handleProfileView}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };
 
 export default Request;
+
+export function RequestCard({
+  user,
+  requestId,
+  handleRequest,
+  handleProfileView,
+}) {
+  const { firstName, lastName, about, age, gender } = user;
+
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface p-3">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(image:--gradient-brand) text-xs font-semibold text-heading">
+        {firstName?.[0]}
+        {lastName?.[0]}
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-heading">
+          {firstName} {lastName}
+        </p>
+
+        {age && gender && (
+          <p className="text-xs text-muted-foreground">
+            {age} · {gender}
+          </p>
+        )}
+
+        {about && (
+          <p className="truncate text-xs text-muted-foreground">{about}</p>
+        )}
+      </div>
+
+      <button
+        onClick={() => handleProfileView(user)}
+        className="rounded-lg border border-brand/40 px-3 py-2 text-xs font-medium text-brand transition hover:bg-brand/10"
+      >
+        View Profile
+      </button>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => handleRequest("accepted", requestId)}
+          aria-label="Accept request"
+          className="flex size-9 items-center justify-center rounded-lg bg-success/15 text-success transition hover:bg-success/25"
+        >
+          <Check className="size-4" />
+        </button>
+
+        <button
+          onClick={() => handleRequest("rejected", requestId)}
+          aria-label="Reject request"
+          className="flex size-9 items-center justify-center rounded-lg bg-destructive/15 text-destructive transition hover:bg-destructive/25"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+    </div>
+  );
+}

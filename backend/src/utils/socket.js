@@ -58,25 +58,38 @@ const initializeSocket = (server) => {
               participants: [userId, targetUserId],
               messages: [],
             });
-
-            chat.messages.push({
-              senderId: userId,
-              receiverId: targetUserId,
-              message: text,
-            });
-
-            await chat.save();
           }
 
           chat.messages.push({
             senderId: userId,
             receiverId: targetUserId,
             message: text,
+            readAt: null,
           });
 
           await chat.save();
 
-          io.to(roomId).emit("messageReceived", { firstName, lastName, text });
+          //get the message that was just added
+
+          await chat.populate([
+            {
+              path: "messages.senderId",
+              select: "firstName, lastName, photoUrl",
+            },
+            {
+              path: "messages.receiverId",
+              select: "firstName, lastName, photoUrl",
+            },
+          ]);
+
+          const savedMessage = chat.messages[chat.messages.length - 1];
+
+          console.log("save message", savedMessage);
+
+          io.to(roomId).emit("messageReceived", {
+            chatId: chat._id,
+            message: savedMessage,
+          });
         } catch (err) {
           console.log(err);
         }
