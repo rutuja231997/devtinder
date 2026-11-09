@@ -17,4 +17,10 @@ userRouter.get("/user/connections", userAuth, userController.findConnections);
 
 userRouter.get("/user/feed", userAuth, userController.findFeed);
 
+userRouter.delete(
+  "/user/connection/:targetUserId",
+  userAuth,
+  userController.removeConnection,
+);
+
 module.exports = userRouter;

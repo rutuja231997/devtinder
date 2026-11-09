@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchConnections } from "../utils/connectionsSlice";
+import { fetchConnections, removeConnection } from "../utils/connectionsSlice";
 
 import ConnectionCard from "../components/ConnectionCard";
+import axiosInstance from "../utils/axiosInstance";
 
 const Connections = () => {
   const dispatch = useDispatch();
@@ -25,9 +26,17 @@ const Connections = () => {
     });
   };
 
-  // const handleRemoveConnection = ()=>{
-
-  // }
+  const handleRemoveConnection = async (targetUserId) => {
+    try {
+      const response = await axiosInstance.delete(
+        `/user/connection/${targetUserId}`,
+      );
+      dispatch(removeConnection(targetUserId));
+      console.log(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     if (connectionStatus === "idle") {
@@ -105,6 +114,7 @@ const Connections = () => {
               connectedAt={c.connectedAt || "Connected just now"}
               index={i}
               onMessage={() => handleMessage(c.user)}
+              onRemove={() => handleRemoveConnection(c.user._id)}
             />
           ))}
         </div>

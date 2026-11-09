@@ -1,5 +1,7 @@
 const ConnectionRequest = require("../models/connectionRequest.model");
 const User = require("../models/user.model");
+const Chat = require("../models/chat.model");
+const mongoose = require("mongoose");
 
 const USER_DATA = [
   "firstName",
@@ -15,7 +17,7 @@ const requestReceive = async (req, res) => {
   try {
     const loggedUser = req.user;
 
-    //find the collection requests
+    //find the list of connection requests
     const connectionRequests = await ConnectionRequest.find({
       toUserId: loggedUser._id,
       status: "interested",
@@ -154,11 +156,84 @@ const findFeed = async (req, res) => {
   }
 };
 
-const unFriendConnection = async (req, res) => {
+const removeConnection = async (req, res) => {
   try {
+    // 1. get logged-in user id
+    const user = req.user;
+    const userId = user._id;
+
+    // 2. get target user id
+    const { targetUserId } = req.params;
+
+    // 3. validate target user
+    if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+      return res.status(400).json({
+        message: "Invalid user Id",
+      });
+    }
+
+    // 4. prevent removing yourself
+    if (userId.toString() === targetUserId) {
+      return res.status(400).json({
+        message: "You can not remove yourself...",
+      });
+    }
+
+    // 5. check whether target user exists
+    const existingUser = await User.findById({ _id: targetUserId });
+
+    if (!existingUser) {
+      return res.status(404).json({
+        message: "User not found...",
+      });
+    }
+    // 5. verify connection & remove connection from both users
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    const removeConnection = await ConnectionRequest.findOneAndDelete(
+      {
+        $or: [
+          { fromUserId: userId, toUserId: targetUserId, status: "accepted" },
+          { fromUserId: targetUserId, toUserId: userId, status: "accepted" },
+        ],
+      },
+      { session },
+    );
+
+    if (!removeConnection) {
+      return res.status(404).json({
+        message: "connection not found",
+      });
+    }
+
+    await Chat.findOneAndDelete(
+      {
+        participants: {
+          $all: [userId, targetUserId],
+        },
+      },
+      { session },
+    );
+
+    await session.commitTransaction();
+
+    // 6. return success response
+    return res.status(200).json({
+      removeConnection: removeConnection,
+      message: "remove connection & chats successfully...",
+    });
   } catch (error) {
-    console.log(error);
+    console.log("remove connection error: ", error);
+    return res.status(500).json({
+      message: "Internal Server Error...",
+    });
   }
 };
 
-module.exports = { requestReceive, findConnections, findFeed };
+module.exports = {
+  requestReceive,
+  findConnections,
+  findFeed,
+  removeConnection,
+};
