@@ -6,6 +6,7 @@ import connectionReducer from "./connectionsSlice";
 import requestReducer from "./requestSlice";
 import messagesReducer from "./messagesSlice";
 import profileviewReducer from "./profileviewSlice";
+import searchUserReducer from "./searchUserSlice";
 
 const appStore = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const appStore = configureStore({
     requests: requestReducer,
     messages: messagesReducer,
     profileviews: profileviewReducer,
+    searchUser: searchUserReducer,
   },
 });
 

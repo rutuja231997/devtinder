@@ -7,6 +7,8 @@ const userController = require("../controllers/user.controller");
 
 const userRouter = express.Router();
 
+userRouter.get("/user/search", userAuth, userController.searchUsers);
+
 userRouter.get(
   "/user/requests/received",
   userAuth,

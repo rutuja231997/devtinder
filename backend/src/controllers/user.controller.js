@@ -231,9 +231,123 @@ const removeConnection = async (req, res) => {
   }
 };
 
+const searchUsers = async (req, res) => {
+  try {
+    // 1. get the logged-in user's id
+    const userId = req.user._id;
+
+    // 2. extract search query, page number and limit
+    const { query, page = 1, limit = 10 } = req.query;
+
+    // 3. validate the search query
+    if (!query || !query.trim()) {
+      return res.status(400).json({
+        message: "Search query is required...",
+      });
+    }
+
+    const searchQuery = query.trim();
+
+    if (searchQuery.length > 100) {
+      return res.status(400).json({
+        message: "Search query is too long...",
+      });
+    }
+
+    // 4. validate pagination values
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    if (
+      !Number.isInteger(pageNumber) ||
+      !Number.isInteger(limitNumber) ||
+      pageNumber < 1 ||
+      limitNumber < 1 ||
+      limitNumber > 50
+    ) {
+      return res.status(400).json({
+        message: "Invalid pagination values",
+      });
+    }
+
+    // 5. calculate pagination
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // 6. escape special regex characters
+    const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    // 7. get ID's of users already connected with logged-in user
+    const connections = await ConnectionRequest.find({
+      $or: [
+        { fromUserId: userId, status: { $in: ["interested", "accepted"] } },
+        { toUserId: userId, status: { $in: ["interested", "accepted"] } },
+      ],
+    }).select("fromUserId toUserId");
+
+    // 8. extracted connected user ID's
+    const connectedUserIds = connections.map((connection) =>
+      connection.fromUserId.toString() === userId.toString()
+        ? connection.toUserId
+        : connection.fromUserId,
+    );
+
+    const excludedUserIds = [userId, ...connectedUserIds];
+
+    // 9. create search condition
+    const searchCondition = {
+      $and: [
+        { _id: { $nin: excludedUserIds } },
+        {
+          $or: [
+            { firstName: { $regex: escapedQuery, $options: "i" } },
+            { lastName: { $regex: escapedQuery, $options: "i" } },
+            { skills: { $regex: escapedQuery, $options: "i" } },
+            { about: { $regex: escapedQuery, $options: "i" } },
+            { role: { $regex: escapedQuery, $options: "i" } },
+          ],
+        },
+      ],
+    };
+
+    // 8. fetch matching developers
+    const users = await User.find(searchCondition)
+      .select("firstName lastName age gender photoUrl about skills role")
+      .skip(skip)
+      .limit(limitNumber)
+      .lean();
+
+    // 9. count total matching developers
+    const totalUsers = await User.countDocuments(searchCondition);
+
+    // 10. calculate total pages
+    const totalPages = Math.ceil(totalUsers / limitNumber);
+
+    // 11. return search results
+    return res.status(200).json({
+      message: "Developers found successfully...",
+      users,
+      pagination: {
+        currentPage: pageNumber,
+        limit: limitNumber,
+        totalUsers,
+        totalPages,
+        hasNextPage: pageNumber < totalPages,
+        hasPreviousPage: pageNumber > 1,
+      },
+    });
+  } catch (err) {
+    console.log("Search users error : ", err);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   requestReceive,
   findConnections,
   findFeed,
   removeConnection,
+  searchUsers,
 };

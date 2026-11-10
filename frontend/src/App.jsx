@@ -21,6 +21,7 @@ import Message from "./components/chat/Message";
 import AuthProvider from "./components/AuthProvider";
 import ProfileView from "./pages/ProfileView";
 import ProfileViews from "./pages/ProfileViews";
+import SearchPage from "./pages/SearchPage";
 
 const App = () => {
   return (
@@ -49,6 +50,7 @@ const App = () => {
                 <Route path="/profile-views" element={<ProfileViews />} />
                 <Route path="/chat/:targetUserId" element={<Chat />} />
                 <Route path="/memberships" element={<Premium />} />
+                <Route path="/search" element={<SearchPage />} />
               </Route>
             </Route>
           </Routes>

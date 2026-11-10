@@ -56,7 +56,7 @@ const Auth = ({ isLogin = true }) => {
         password: "",
       });
 
-      navigate("/feed");
+      navigate("/dashboard");
     } catch (err) {
       console.log(err);
       setError(err?.response?.data?.message);
