@@ -4,7 +4,7 @@ import { Search, Users, AlertCircle, X } from "lucide-react";
 
 import axiosInstance from "../utils/axiosInstance";
 import DeveloperCard from "../components/DeveloperCard";
-import SearchPagination from "../components/Search/SearchPagination";
+import SearchPagination from "../components/search/SearchPagination";
 
 import {
   setSearchUsers,
